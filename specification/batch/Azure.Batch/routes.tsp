@@ -1402,6 +1402,22 @@ alias StartNodeRequiredParameters = {
   nodeId: string;
 };
 
+alias RebootNodeRequiredParameters = {
+  @doc("The ID of the Pool that contains the Compute Node.")
+  @path
+  poolId: string;
+
+  @doc("The ID of the Compute Node that you want to restart.")
+  @path
+  nodeId: string;
+};
+
+alias RebootNodeOptionalParameters = {
+  @doc("The options to use for rebooting the Compute Node.")
+  @bodyRoot
+  parameters?: BatchNodeRebootContent;
+};
+
 // Node Interface
 
 #suppress "@azure-tools/typespec-azure-core/no-rpc-path-params" ""
@@ -1470,20 +1486,11 @@ interface Nodes {
   @summary("Restarts the specified Compute Node.")
   @doc("You can restart a Compute Node only if it is in an idle or running state.")
   @route("/pools/{poolId}/nodes/{nodeId}/reboot")
-  @clientName("rebootNodeInternal", "java")
-  rebootNode is PostOperation<
-    MinimalMetadata & {
-      @doc("The ID of the Pool that contains the Compute Node.")
-      @path
-      poolId: string;
-
-      @doc("The ID of the Compute Node that you want to restart.")
-      @path
-      nodeId: string;
-
-      @doc("The options to use for rebooting the Compute Node.")
-      @bodyRoot
-      parameters?: BatchNodeRebootContent;
+  rebootNode is PostOperationNew<
+    {
+      ...CommonJsonParameters;
+      ...RebootNodeOptionalParameters;
+      ...RebootNodeRequiredParameters;
     },
     AcceptedProcessingResponseHeaders
   >;
